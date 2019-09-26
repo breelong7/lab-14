@@ -2,7 +2,7 @@
 'use strict';
 
 
-var tbodyEl = document.getElementsByTagName('tbody');
+var tbodyEl = document.querySelector('tbody');
 
 // Create an event listener so that when the delete link is clicked, the removeItemFromCart method is invoked.
 var table = document.getElementById('cart');
@@ -29,35 +29,50 @@ function clearCart() {
   }
 }
 
+// helper function
+function addElement(element, content, parent){
+  var newElement = document.createElement(element);
+  if(content){
+    var newContent = document.createTextNode(content);
+    newElement.appendChild(newContent);
+  }
+  parent.appendChild(newElement);
+  return newElement;
+}
+
 // TODO: Fill in the <tr>'s under the <tbody> for each item in the cart
 function showCart() {
   for (var i = 0; i < cart.items.length; i++){
-    var trEl = document.createElement('tr');
-    tbodyEl.appendChild(trEl);
-    var tdEl = document.createElement('td');
-    tdEl.textContent = 'X';
-    trEl.appendChild(tdEl);
-    var tdOneEl = document.createElement('td');
-    tdOneEl.textContent = cart.items[i].quantity;
-    trEl.appendChild(tdEl);
-    var tdTwoEl = document.createElement('td');
-    tdTwoEl.textContent = cart.items[i].product;
-    trEl.appendChild(tdTwoEl);
+    var trEl = addElement('tr', false, tbodyEl);
+    var tdEl = addElement('td', false, trEl);
+    var input = addElement('input', false, tdEl);
+    input.setAttribute('type', 'button');
+    input.setAttribute('value', 'X');
+    addElement('td', cart.items[i].quantity, trEl);
+    addElement ('td', cart.items[i].product, trEl);
   }
-
-
 }
 
 function removeItemFromCart(event) {
-  if(event.target.textContent === 'X') {
-    tbodyEl.deleteRow();
+  for (var i = 0; i < cart.items.length; i++){
+    if(event.target.value === 'X') {
+      tbodyEl.deleteRow( event.target.parentNode.parentNode.rowIndex );
+    }
+
   }
   cart.saveToLocalStorage();
   renderCart();
 
-
-
 }
 
+// function deleteRow(btn) {
+//   var row = btn.parentNode.parentNode;
+//   row.parentNode.removeChild(row);
+// }
+
+// function deleteRow(r) {
+//   var i = r.parentNode.parentNode.rowIndex;
+//   tbodyEl.deleteRow(i);
+// }
 // This will initialize the page and draw the cart on screen
 renderCart();
